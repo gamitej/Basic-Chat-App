@@ -20,7 +20,7 @@ function App() {
   };
 
   return (
-    <div className="h-[60vh] w-full flex flex-col justify-center items-center">
+    <div className="h-full w-full flex flex-col justify-center items-center">
       <div className="flex flex-col gap-y-4">
         <input
           type="text"

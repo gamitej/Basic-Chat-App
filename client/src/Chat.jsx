@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const Chat = ({ socket, name, room }) => {
+const Chat = ({ socket, name = "amitej", room }) => {
   const [currentMsg, setCurrentMsg] = useState("");
-  const [newMsg, setNewMsg] = useState("");
+  const [messageList, setMessageList] = useState([
+    { message: "hi sam", author: "amitej" },
+    { message: "hi amitej", author: "sam" },
+  ]);
 
   const sendMessage = async (e) => {
     if (currentMsg !== "") {
@@ -22,28 +25,48 @@ const Chat = ({ socket, name, room }) => {
 
   useEffect(() => {
     socket.on("receive-message", (data) => {
-      console.log(data);
-      setNewMsg(data.message);
+      setMessageList([...messageList, data]);
     });
   }, [socket]);
 
   return (
-    <div>
+    <div className="w-[300px] h-[420px] border flex flex-col justify-between ">
       {/*chat header */}
-      <div>Live Chat</div>
+      <div className="h-[40px] bg-slate-600">
+        <h3 className="text-[1.3rem] text-center text-white py-1">Live Chat</h3>
+      </div>
       {/*chat body */}
-      <div>{newMsg}</div>
+      <div className="relative h-[calc(450px-(115px))] bg-slate-100 overflow-y-scroll overflow-x-hidden flex flex-col">
+        {messageList?.map(({ message, time, author }, idx) => (
+          <div className="flex flex-col">
+            {author === "amitej" && (
+              <div className="flex justify-end w-auto mt-1">
+                <p className="bg-blue-500 px-2 rounded-md text-white max-w-[120px] w-auto minx-h-[40px] h-auto">
+                  {message}
+                </p>
+              </div>
+            )}
+            {author !== "amitej" && (
+              <div className="flex justify-start w-auto mt-1">
+                <p className="bg-slate-500 px-2 rounded-md text-white max-w-[120px] w-auto minx-h-[40px] h-auto">
+                  {message}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
       {/*chat footer */}
-      <div className="flex gap-x-2">
+      <div className="flex ">
         <input
           type="text"
-          className="border border-black px-2"
+          className="border border-black text-[16px] px-2 w-[250px] h-[40px]"
           placeholder="Hey..."
           name={currentMsg}
           onChange={(e) => setCurrentMsg(e.target.value)}
         />
         <button
-          className="border border-black px-2 bg-blue-600 text-white"
+          className="border border-black w-[50px] bg-blue-600 text-white"
           onClick={sendMessage}
         >
           &#9658;
