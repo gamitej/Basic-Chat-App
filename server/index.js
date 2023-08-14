@@ -6,17 +6,26 @@ const { Server } = require("socket.io");
 const PORT = 3000;
 // CONFIGURATION
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://localhost:5173",
+    origin: "http://localhost:5173",
   },
 });
 
 // SOCKET CONNECTION
-
 io.on("connection", (socket) => {
   console.log("user connected" + socket.id);
+
+  socket.on("joined-chat", (data) => {
+    // join room
+    socket.join(data.roomId);
+    console.log(data);
+    socket
+      .to(data.roomId)
+      .emit("joined-chat-message", `${data.name} joined the chat`);
+  });
 });
 
 server.listen(PORT, () => {

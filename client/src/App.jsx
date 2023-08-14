@@ -6,7 +6,7 @@ import ChatRoom from "@/pages/Chat/ChatRoom";
 import io from "socket.io-client";
 
 function App() {
-  const socket = io.connect("http://localhost:3000");
+  const socket = useMemo(() => io.connect("http://localhost:3000"), []);
 
   /**
    * JSX
@@ -14,8 +14,8 @@ function App() {
   return (
     <div className="bg-slate-100 h-[100vh] w-full flex justify-center items-center">
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/room/:id" element={<ChatRoom />} />
+        <Route path="/" element={<Login socket={socket} />} />
+        <Route path="/room/:id" element={<ChatRoom socket={socket} />} />
       </Routes>
     </div>
   );

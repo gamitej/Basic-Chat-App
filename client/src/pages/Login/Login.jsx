@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ socket }) => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({ name: "", roomId: "" });
 
   // ========= EVENTS-HANDLERS ==============
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
+    setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   // ============ SOCKET-IO =================
 
-  
+  const handleJoinChat = async (e) => {
+    e.preventDefault();
+    if (userInfo.name !== "" && userInfo.roomId !== "") {
+      await socket.emit("joined-chat", userInfo);
+      navigate(`/room/${userInfo.roomId}`);
+    }
+  };
 
   /**
    * JSX
@@ -25,7 +34,10 @@ const Login = () => {
         </h3>
       </div>
       {/* login-form */}
-      <form className="flex flex-col justify-evenly items-center w-full h-full">
+      <form
+        onSubmit={handleJoinChat}
+        className="flex flex-col justify-evenly items-center w-full h-full"
+      >
         <div className="flex flex-col gap-1 w-[80%]">
           <label className="text-slate-500 font-semibold  text-lg px-1">
             Name
@@ -54,7 +66,10 @@ const Login = () => {
             required
           />
         </div>
-        <button className=" bg-blue-400 border text-white px-5 py-2 rounded-md text-lg">
+        <button
+          type="submit"
+          className=" bg-blue-400 border text-white px-5 py-2 rounded-md text-lg"
+        >
           Join Chat
         </button>
       </form>
