@@ -23,6 +23,7 @@ const ChatBody = forwardRef(({ room, username }, ref) => {
     <div className="flex m-auto w-[95%] h-full border shadow-sm">
       <div
         className="flex flex-col gap-y-2 p-2 w-full overflow-y-auto"
+        id="scrollBar"
         ref={ref}
       >
         {messageList.map(({ senderName, time, message }, idx) => (
