@@ -15,7 +15,7 @@ function App() {
     <div className="bg-slate-100 h-[100vh] w-full flex justify-center items-center">
       <Routes>
         <Route path="/" element={<Login socket={socket} />} />
-        <Route path="/room/:id" element={<ChatRoom socket={socket} />} />
+        <Route path="/chat-room" element={<ChatRoom socket={socket} />} />
       </Routes>
     </div>
   );

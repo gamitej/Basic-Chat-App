@@ -17,7 +17,7 @@ const Login = ({ socket }) => {
     e.preventDefault();
     if (userInfo.name !== "" && userInfo.roomId !== "") {
       await socket.emit("joined-chat", userInfo);
-      navigate(`/room/${userInfo.roomId}`);
+      navigate(`/chat-room?room=${userInfo.roomId}&name=${userInfo.name}`);
     }
   };
 
