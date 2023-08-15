@@ -1,21 +1,6 @@
 import React, { forwardRef, useState } from "react";
 
-const ChatBody = forwardRef(({ room, username }, ref) => {
-  const [messageList, setMessageList] = useState([
-    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
-    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
-    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
-    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
-    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
-    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
-    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
-    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
-    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
-    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
-    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
-    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
-  ]);
-
+const ChatBody = forwardRef(({ messageList, room, username }, ref) => {
   /**
    * JSX
    */

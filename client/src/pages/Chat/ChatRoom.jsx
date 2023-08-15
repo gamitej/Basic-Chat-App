@@ -5,11 +5,13 @@ import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined
 import ChatRightSide from "./ChatRightSide";
 import ChatBody from "./ChatBody";
 import { useLocation, useParams } from "react-router-dom";
+import moment from "moment";
 
 const ChatRoom = ({ socket }) => {
   let { search } = useLocation();
   const chatContainerRef = useRef(null);
   const [messageInput, setMessageInput] = useState("");
+  const [messageList, setMessageList] = useState([]);
 
   // extracting name & roomid from url parameters
   const { you, roomId } = useMemo(() => {
@@ -19,30 +21,51 @@ const ChatRoom = ({ socket }) => {
 
   // typing message event handler
   const handleChangeMessageInput = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setMessageInput(value);
   };
 
   // sending message to chat room
-  const handleSendMessage = () => {};
+  useEffect(() => {
+    const handleReceivedMessage = (data) => {
+      setMessageList((prevMessageList) => [...prevMessageList, data]);
+    };
+
+    const handleJoinedChatMessage = (data) => {
+      console.log(data);
+    };
+
+    socket.on("recieved-chat-message", handleReceivedMessage);
+    socket.on("joined-chat-message", handleJoinedChatMessage);
+
+    return () => {
+      // Clean up the event listeners when the component unmounts
+      socket.off("recieved-chat-message", handleReceivedMessage);
+      socket.off("joined-chat-message", handleJoinedChatMessage);
+    };
+  }, [socket]);
 
   useEffect(() => {
-    socket.on("joined-chat-message", (data) => {
-      console.log(data);
-    });
-
-    // Scroll to the last message
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
+  }, [messageList]);
 
-    return () => {
-      socket.off("joined-chat-message", () => {
-        console.log("left the chat");
-      });
+  const handleSendMessage = async () => {
+    const msgData = {
+      senderName: you,
+      time: moment().format("hh:mm a"),
+      message: messageInput,
+      roomId,
     };
-  }, [socket]);
+
+    if (messageInput.trim() !== "") {
+      await socket.emit("send-chat-message", msgData);
+      setMessageList((prevMessageList) => [...prevMessageList, msgData]);
+      setMessageInput("");
+    }
+  };
 
   /**
    * JSX
@@ -65,7 +88,12 @@ const ChatRoom = ({ socket }) => {
           <ChatRightSide room={roomId} />
         </div>
         <div className="w-[70%]">
-          <ChatBody room={roomId} username={you} ref={chatContainerRef} />
+          <ChatBody
+            room={roomId}
+            username={you}
+            ref={chatContainerRef}
+            messageList={messageList}
+          />
         </div>
       </div>
       {/* footer */}
@@ -74,6 +102,7 @@ const ChatRoom = ({ socket }) => {
           autoComplete="off"
           type="text"
           name="message"
+          value={messageInput}
           placeholder="Enter message..."
           onChange={handleChangeMessageInput}
           className="border rounded-tl-md rounded-bl-md w-[75%] px-2 py-1"

@@ -26,6 +26,11 @@ io.on("connection", (socket) => {
       .to(data.roomId)
       .emit("joined-chat-message", `${data.name} joined the chat`);
   });
+
+  socket.on("send-chat-message", (data) => {
+    console.log(data);
+    socket.to(data.roomId).emit("recieved-chat-message", data);
+  });
 });
 
 server.listen(PORT, () => {

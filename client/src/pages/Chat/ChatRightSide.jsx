@@ -2,7 +2,7 @@ import React from "react";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 
-const ChatRightSide = () => {
+const ChatRightSide = ({ room }) => {
   return (
     <div className="flex flex-col gap-y-3">
       <p className="text-white text-xl" style={{ fontWeight: "500" }}>
@@ -12,7 +12,7 @@ const ChatRightSide = () => {
         className="bg-blue-400 px-3 py-2 text-white"
         style={{ fontWeight: "500" }}
       >
-        Discuss
+        {room}
       </p>
       <p className="text-white text-xl mt-2" style={{ fontWeight: "500" }}>
         <GroupsOutlinedIcon /> Users
