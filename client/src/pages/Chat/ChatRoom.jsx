@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import TelegramIcon from "@mui/icons-material/Telegram";
 
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
@@ -8,6 +8,7 @@ import { useLocation, useParams } from "react-router-dom";
 
 const ChatRoom = ({ socket }) => {
   let { search } = useLocation();
+  const chatContainerRef = useRef(null);
   const [messageInput, setMessageInput] = useState("");
 
   // extracting name & roomid from url parameters
@@ -29,6 +30,12 @@ const ChatRoom = ({ socket }) => {
     socket.on("joined-chat-message", (data) => {
       console.log(data);
     });
+
+    // Scroll to the last message
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
 
     return () => {
       socket.off("joined-chat-message", () => {
@@ -58,7 +65,7 @@ const ChatRoom = ({ socket }) => {
           <ChatRightSide room={roomId} />
         </div>
         <div className="w-[70%]">
-          <ChatBody room={roomId} username={you} />
+          <ChatBody room={roomId} username={you} ref={chatContainerRef} />
         </div>
       </div>
       {/* footer */}

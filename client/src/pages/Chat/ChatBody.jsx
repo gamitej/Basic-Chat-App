@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 
-const ChatBody = ({ room, username }) => {
+const ChatBody = forwardRef(({ room, username }, ref) => {
   const [messageList, setMessageList] = useState([
+    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
+    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
+    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
+    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
+    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
+    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
+    { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
+    { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
+    { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
     { senderName: "amitej", time: "1:05pm", message: "hi rohan" },
     { senderName: "rohan", time: "1:!5pm", message: "hi amitej" },
     { senderName: "amitej", time: "2:!5pm", message: "kaise ho" },
@@ -12,7 +21,10 @@ const ChatBody = ({ room, username }) => {
    */
   return (
     <div className="flex m-auto w-[95%] h-full border shadow-sm">
-      <div className="flex flex-col gap-y-2 p-2 w-full">
+      <div
+        className="flex flex-col gap-y-2 p-2 w-full overflow-y-auto"
+        ref={ref}
+      >
         {messageList.map(({ senderName, time, message }, idx) => (
           <MessageBox
             senderName={senderName}
@@ -25,7 +37,7 @@ const ChatBody = ({ room, username }) => {
       </div>
     </div>
   );
-};
+});
 
 function MessageBox({ time, message, senderName, username }) {
   return (
