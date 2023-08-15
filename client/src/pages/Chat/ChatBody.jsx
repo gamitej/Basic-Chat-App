@@ -33,6 +33,7 @@ function MessageBox({ time, message, senderName, username }) {
         <div className="w-full flex justify-end">
           <div className="bg-blue-400 text-white px-2 py-1 rounded-md max-w-[95%]">
             <p>
+              <span className="text-[11px] block capitalize">{senderName}</span>
               {message}
               <span className="text-[11px] block">{time}</span>
             </p>
@@ -44,8 +45,9 @@ function MessageBox({ time, message, senderName, username }) {
         <div className="w-full flex justify-start">
           <div className="bg-slate-400 text-white px-2 py-1 rounded-md max-w-[95%]">
             <p>
+              <span className="text-[11px] block capitalize">{senderName}</span>
               {message}
-              <span className="text-[11px] block">{time}</span>
+              <span className="text-[10px] block">{time}</span>
             </p>
           </div>
         </div>

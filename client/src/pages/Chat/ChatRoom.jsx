@@ -85,7 +85,7 @@ const ChatRoom = ({ socket }) => {
       {/* body */}
       <div className="h-[76%] flex">
         <div className="w-[30%] bg-blue-300 h-full px-3 py-2">
-          <ChatRightSide room={roomId} />
+          <ChatRightSide room={roomId} username={you} />
         </div>
         <div className="w-[70%]">
           <ChatBody

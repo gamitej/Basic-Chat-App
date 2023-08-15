@@ -14,13 +14,15 @@ const io = new Server(server, {
   },
 });
 
+const userSessions = new Map();
+
 // SOCKET CONNECTION
 io.on("connection", (socket) => {
   console.log("user connected " + socket.id);
 
   socket.on("joined-chat", (data) => {
-    // join room
     socket.join(data.roomId);
+    userSessions.set(socket.id, { name: data.name, roomId: data.roomId });
     console.log(data);
     socket
       .to(data.roomId)
@@ -28,8 +30,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-chat-message", (data) => {
-    console.log(data);
-    socket.to(data.roomId).emit("recieved-chat-message", data);
+    const userSession = userSessions.get(socket.id);
+    if (userSession) {
+      console.log(data);
+      socket.to(userSession.roomId).emit("recieved-chat-message", data);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    userSessions.delete(socket.id);
+    console.log("user disconnected " + socket.id);
   });
 });
 
