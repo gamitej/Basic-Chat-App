@@ -4,7 +4,7 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
 import ChatRightSide from "./ChatRightSide";
 import ChatBody from "./ChatBody";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import moment from "moment";
 
 const ChatRoom = ({ socket }) => {
@@ -31,17 +31,30 @@ const ChatRoom = ({ socket }) => {
       setMessageList((prevMessageList) => [...prevMessageList, data]);
     };
 
-    const handleJoinedChatMessage = (data) => {
+    const handleUserOnline = (data) => {
       console.log(data);
     };
 
     socket.on("recieved-chat-message", handleReceivedMessage);
-    socket.on("joined-chat-message", handleJoinedChatMessage);
+    socket.on("userIsOnline", handleUserOnline);
 
     return () => {
       // Clean up the event listeners when the component unmounts
       socket.off("recieved-chat-message", handleReceivedMessage);
-      socket.off("joined-chat-message", handleJoinedChatMessage);
+      socket.off("joined-chat-message", handleUserOnline);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Emit a disconnect event before the browser is closed
+      socket.disconnect();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [socket]);
 
@@ -78,9 +91,12 @@ const ChatRoom = ({ socket }) => {
         <h3 className="text-white text-2xl font-semibold text-center">
           <EmojiEmotionsOutlinedIcon style={{ fontSize: "2rem" }} /> Chat Room
         </h3>
-        <button className="border-[.15rem] text-blue-600 bg-blue-200 px-3 py-1 rounded-md shadow-md hover:shadow-sm border-blue-400  focus:border-blue-500">
+        <Link
+          to="/"
+          className="border-[.15rem] text-blue-600 bg-blue-200 px-3 py-1 rounded-md shadow-md hover:shadow-sm border-blue-400  focus:border-blue-500"
+        >
           Leave Room
-        </button>
+        </Link>
       </div>
       {/* body */}
       <div className="h-[76%] flex">
