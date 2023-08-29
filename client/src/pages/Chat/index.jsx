@@ -12,6 +12,9 @@ const ChatRoom = ({ socket }) => {
   const chatContainerRef = useRef(null);
   const [messageInput, setMessageInput] = useState("");
   const [messageList, setMessageList] = useState([]);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
 
   // extracting name & roomid from url parameters
   const { you, roomId } = useMemo(() => {
@@ -23,25 +26,64 @@ const ChatRoom = ({ socket }) => {
   const handleChangeMessageInput = (e) => {
     const value = e.target.value;
     setMessageInput(value);
+
+    // typing indicator
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", {
+        roomId: 1234,
+      });
+    }
+    // Clear the previous timeout if exists
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    var timerLength = 3000;
+    let lastTypingTime = new Date().getTime();
+    const newTimeoutId = setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", {
+          roomId: 1234,
+        });
+        setTyping(false);
+      }
+    }, timerLength);
+    setTimeoutId(newTimeoutId);
+  };
+
+  const handleUserTyping = () => {
+    setIsTyping(true);
+  };
+
+  const handleUserStoppedTyping = () => {
+    setIsTyping(false);
+  };
+
+  const handleReceivedMessage = (data) => {
+    setMessageList((prevMessageList) => [...prevMessageList, data]);
+  };
+
+  const handleUserOnline = (data) => {
+    console.log(data);
   };
 
   // sending message to chat room
   useEffect(() => {
-    const handleReceivedMessage = (data) => {
-      setMessageList((prevMessageList) => [...prevMessageList, data]);
-    };
-
-    const handleUserOnline = (data) => {
-      console.log(data);
-    };
-
     socket.on("recieved-chat-message", handleReceivedMessage);
     socket.on("userIsOnline", handleUserOnline);
+    socket.on("userTyping", handleUserTyping);
+    socket.on("userStoppedTyping", handleUserStoppedTyping);
 
     return () => {
       // Clean up the event listeners when the component unmounts
       socket.off("recieved-chat-message", handleReceivedMessage);
       socket.off("joined-chat-message", handleUserOnline);
+      socket.off("userTyping", handleUserTyping);
+      socket.off("userStoppedTyping", handleUserStoppedTyping);
     };
   }, [socket]);
 
@@ -91,6 +133,7 @@ const ChatRoom = ({ socket }) => {
         <h3 className="text-white text-2xl font-semibold text-center">
           <EmojiEmotionsOutlinedIcon style={{ fontSize: "2rem" }} /> Chat Room
         </h3>
+        <p className="text-white"> {isTyping && "typing..."} </p>
         <Link
           to="/"
           className="border-[.15rem] text-blue-600 bg-blue-200 px-3 py-1 rounded-md shadow-md hover:shadow-sm border-blue-400  focus:border-blue-500"

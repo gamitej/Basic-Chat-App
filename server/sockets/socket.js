@@ -52,7 +52,7 @@ function setupSocketServer(io) {
         name: data.name,
         roomId: data.roomId,
       });
-      console.log(data);
+
       socket
         .to(data.roomId)
         .emit("userIsOnline", `${data.name} joined the chat`);
@@ -64,6 +64,19 @@ function setupSocketServer(io) {
         console.log(data);
         socket.to(userSession.roomId).emit("recieved-chat-message", data);
       }
+    });
+
+    // typing
+
+    socket.on("typing", (data) => {
+      console.log(data);
+      const userSession = userSessionsBySocketId.get(socket.id);
+      socket.to(userSession.roomId).emit("userTyping", data);
+    });
+
+    socket.on("stop typing", (data) => {
+      const userSession = userSessionsBySocketId.get(socket.id);
+      socket.to(userSession.roomId).emit("userStoppedTyping", data);
     });
 
     socket.on("disconnect", () => {

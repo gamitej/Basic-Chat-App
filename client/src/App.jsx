@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 // Pages
 import Login from "@/pages/Login/Login";
-import ChatRoom from "@/pages/Chat/ChatRoom";
+import ChatRoom from "@/pages/Chat";
 import io from "socket.io-client";
 
 function App() {
